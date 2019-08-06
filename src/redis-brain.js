@@ -32,15 +32,18 @@ module.exports = function (robot) {
   }
 
   const info = Url.parse(redisUrl)
+  robot.logger.info(`Info = ${info}`)
 
   if (info.hostname === '') {
     client = Redis.createClient(info.pathname)
     prefix = (info.query ? info.query.toString() : undefined) || 'hubot'
+    robot.logger.info(`Prefix = ${prefix}`)
   } else {
     client = (info.auth || process.env.REDIS_NO_CHECK)
               ? Redis.createClient(info.port, info.hostname, {no_ready_check: true})
             : Redis.createClient(info.port, info.hostname)
     prefix = (info.path ? info.path.replace('/', '') : undefined) || 'hubot'
+    robot.logger.info(`Prefix = ${prefix}`)
   }
 
   robot.brain.setAutoSave(false)
