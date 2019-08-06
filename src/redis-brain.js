@@ -31,10 +31,10 @@ module.exports = function (robot) {
     robot.logger.info('Turning off redis ready checks')
   }
 
-  robot.logger.info(`!redisUrl = ${redisUrl}`)
+  robot.logger.info(`hubot-redis-brain: !redisUrl = ${redisUrl}`)
   const info = Url.parse(redisUrl)
-  robot.logger.info(`!info.hostname = ${info.hostname}`)
-  robot.logger.info(`!info.pathname = ${info.pathname}`)
+  robot.logger.info(`hubot-redis-brain: !info.hostname = ${info.hostname}`)
+  robot.logger.info(`hubot-redis-brain: !info.pathname = ${info.pathname}`)
 
   if (info.hostname === '') {
     client = Redis.createClient(info.pathname)
@@ -43,12 +43,14 @@ module.exports = function (robot) {
     client = (info.auth || process.env.REDIS_NO_CHECK)
               ? Redis.createClient(info.port, info.hostname, {no_ready_check: true})
             : Redis.createClient(info.hostname)
-    robot.logger.info(`!info.auth = ${info.auth}`)
-    robot.logger.info(`!process.env.REDIS_NO_CHECK = ${process.env.REDIS_NO_CHECK}`)
-    robot.logger.info(`!info.port = ${info.port}`)
+    robot.logger.info(`hubot-redis-brain: !info.auth = ${info.auth}`)
+    robot.logger.info(`hubot-redis-brain: !process.env.REDIS_NO_CHECK = ${process.env.REDIS_NO_CHECK}`)
+    robot.logger.info(`hubot-redis-brain: !info.port = ${info.port}`)
     prefix = (info.path ? info.path.replace('/', '') : undefined) || 'hubot'
-    robot.logger.info(`!prefix = ${prefix}`)
+    robot.logger.info(`hubot-redis-brain: !prefix = ${prefix}`)
   }
+
+  robot.logger.info(`hubot-redis-brain: !client = ${client}`)
 
   robot.brain.setAutoSave(false)
 
