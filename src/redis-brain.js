@@ -31,6 +31,7 @@ module.exports = function (robot) {
     robot.logger.info('Turning off redis ready checks')
   }
 
+  robot.logger.info(`redisUrl = ${redisUrl}`)
   const info = Url.parse(redisUrl)
   robot.logger.info(`info.hostname = ${info.hostname}`)
   robot.logger.info(`info.pathname = ${info.pathname}`)
