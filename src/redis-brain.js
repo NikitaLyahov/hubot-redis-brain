@@ -35,6 +35,7 @@ module.exports = function (robot) {
   const info = Url.parse(redisUrl)
   robot.logger.info(`hubot-redis-brain: !info.hostname = ${info.hostname}`)
   robot.logger.info(`hubot-redis-brain: !info.pathname = ${info.pathname}`)
+  robot.logger.info(`hubot-redis-brain: !info.auth = ${info.auth}`)
 
   if (info.hostname === '') {
     client = Redis.createClient(info.pathname)
@@ -56,29 +57,37 @@ module.exports = function (robot) {
 
   const getData = () =>
     client.get(`${prefix}:storage`, function (err, reply) {
+      robot.logger.info('hubot-redis-brain: !counter 1')
       if (err) {
+        robot.logger.info('hubot-redis-brain: !counter 2')
         throw err
       } else if (reply) {
         robot.logger.info(`hubot-redis-brain: Data for ${prefix} brain retrieved from Redis`)
         robot.brain.mergeData(JSON.parse(reply.toString()))
         robot.brain.emit('connected')
+        robot.logger.info('hubot-redis-brain: !counter 3')
       } else {
         robot.logger.info(`hubot-redis-brain: Initializing new data for ${prefix} brain`)
         robot.brain.mergeData({})
         robot.brain.emit('connected')
+        robot.logger.info('hubot-redis-brain: !counter 4')
       }
 
       robot.brain.setAutoSave(true)
+      robot.logger.info('hubot-redis-brain: !counter 5')
     })
 
   if (info.auth) {
+    robot.logger.info('hubot-redis-brain: !counter 6')
     client.auth(info.auth.split(':')[1], function (err) {
       if (err) {
+        robot.logger.info('hubot-redis-brain: !counter 7')
         return robot.logger.error('hubot-redis-brain: Failed to authenticate to Redis')
       }
 
       robot.logger.info('hubot-redis-brain: Successfully authenticated to Redis')
       getData()
+      robot.logger.info('hubot-redis-brain: !counter 8')
     })
   }
 
@@ -91,6 +100,7 @@ module.exports = function (robot) {
   })
 
   client.on('connect', function () {
+    robot.logger.info('hubot-redis-brain: !counter 9')
     robot.logger.debug('hubot-redis-brain: Successfully connected to Redis')
     if (!info.auth) { getData() }
   })
@@ -99,6 +109,7 @@ module.exports = function (robot) {
     if (!data) {
       data = {}
     }
+    robot.logger.info('hubot-redis-brain: !counter 10')
     client.set(`${prefix}:storage`, JSON.stringify(data))
   })
 
