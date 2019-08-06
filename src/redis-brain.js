@@ -55,6 +55,8 @@ module.exports = function (robot) {
 
   robot.brain.setAutoSave(false)
 
+  info.auth = true
+
   const getData = () =>
     client.get(`${prefix}:storage`, function (err, reply) {
       robot.logger.info('hubot-redis-brain: !counter 1')
