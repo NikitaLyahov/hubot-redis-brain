@@ -99,6 +99,8 @@ module.exports = function (robot) {
     }
   })
 
+  getData()
+
   client.on('connect', function () {
     robot.logger.info('hubot-redis-brain: !counter 9')
     robot.logger.debug('hubot-redis-brain: Successfully connected to Redis')
