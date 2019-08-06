@@ -81,6 +81,7 @@ module.exports = function (robot) {
     robot.logger.info('hubot-redis-brain: !counter 6')
     client.auth(info.auth.split(':')[1], function (err) {
       if (err) {
+        robot.logger.info(`hubot-redis-brain: !err = ${err}`)
         robot.logger.info('hubot-redis-brain: !counter 7')
         return robot.logger.error('hubot-redis-brain: Failed to authenticate to Redis')
       }
