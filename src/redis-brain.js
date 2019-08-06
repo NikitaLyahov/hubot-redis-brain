@@ -77,6 +77,8 @@ module.exports = function (robot) {
       robot.logger.info('hubot-redis-brain: !counter 5')
     })
 
+  client.set("string key", "string val", redis.print);
+
   if (info.auth) {
     robot.logger.info('hubot-redis-brain: !counter 6')
     client.auth(info.auth.split(':')[1], function (err) {
