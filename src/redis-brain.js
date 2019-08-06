@@ -41,7 +41,7 @@ module.exports = function (robot) {
   } else {
     client = (info.auth || process.env.REDIS_NO_CHECK)
               ? Redis.createClient(info.port, info.hostname, {no_ready_check: true})
-            : Redis.createClient(info.port, info.hostname)
+            : Redis.createClient(info.hostname)
     robot.logger.info(`info.auth = ${info.auth}`)
     robot.logger.info(`process.env.REDIS_NO_CHECK = ${process.env.REDIS_NO_CHECK}`)
     robot.logger.info(`info.port = ${info.port}`)
