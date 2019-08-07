@@ -31,64 +31,48 @@ module.exports = function (robot) {
     robot.logger.info('Turning off redis ready checks')
   }
 
-  robot.logger.info(`hubot-redis-brain: !redisUrl = ${redisUrl}`)
   const info = Url.parse(redisUrl)
-  robot.logger.info(`hubot-redis-brain: !info.hostname = ${info.hostname}`)
-  robot.logger.info(`hubot-redis-brain: !info.pathname = ${info.pathname}`)
-  robot.logger.info(`hubot-redis-brain: !info.auth = ${info.auth}`)
+  robot.logger.info(`Info = ${info}`)
 
   if (info.hostname === '') {
     client = Redis.createClient(info.pathname)
     prefix = (info.query ? info.query.toString() : undefined) || 'hubot'
+    robot.logger.info(`Prefix = ${prefix}`)
   } else {
     client = (info.auth || process.env.REDIS_NO_CHECK)
               ? Redis.createClient(info.port, info.hostname, {no_ready_check: true})
-            : Redis.createClient(info.hostname)
-    robot.logger.info(`hubot-redis-brain: !info.auth = ${info.auth}`)
-    robot.logger.info(`hubot-redis-brain: !process.env.REDIS_NO_CHECK = ${process.env.REDIS_NO_CHECK}`)
-    robot.logger.info(`hubot-redis-brain: !info.port = ${info.port}`)
+            : Redis.createClient(info.port, info.hostname)
     prefix = (info.path ? info.path.replace('/', '') : undefined) || 'hubot'
-    robot.logger.info(`hubot-redis-brain: !prefix = ${prefix}`)
+    robot.logger.info(`Prefix = ${prefix}`)
   }
-
-  robot.logger.info(`hubot-redis-brain: !client = ${client}`)
 
   robot.brain.setAutoSave(false)
 
   const getData = () =>
     client.get(`${prefix}:storage`, function (err, reply) {
-      robot.logger.info('hubot-redis-brain: !counter 1')
       if (err) {
-        robot.logger.info('hubot-redis-brain: !counter 2')
         throw err
       } else if (reply) {
         robot.logger.info(`hubot-redis-brain: Data for ${prefix} brain retrieved from Redis`)
         robot.brain.mergeData(JSON.parse(reply.toString()))
         robot.brain.emit('connected')
-        robot.logger.info('hubot-redis-brain: !counter 3')
       } else {
         robot.logger.info(`hubot-redis-brain: Initializing new data for ${prefix} brain`)
         robot.brain.mergeData({})
         robot.brain.emit('connected')
-        robot.logger.info('hubot-redis-brain: !counter 4')
       }
 
       robot.brain.setAutoSave(true)
-      robot.logger.info('hubot-redis-brain: !counter 5')
     })
 
   if (info.auth) {
-    robot.logger.info('hubot-redis-brain: !counter 6')
     client.auth(info.auth.split(':')[1], function (err) {
       if (err) {
-        robot.logger.info(`hubot-redis-brain: !err = ${err}`)
-        robot.logger.info('hubot-redis-brain: !counter 7')
         return robot.logger.error('hubot-redis-brain: Failed to authenticate to Redis')
       }
 
       robot.logger.info('hubot-redis-brain: Successfully authenticated to Redis')
       getData()
-      robot.logger.info('hubot-redis-brain: !counter 8')
     })
   }
 
@@ -100,10 +84,7 @@ module.exports = function (robot) {
     }
   })
 
-  getData()
-
   client.on('connect', function () {
-    robot.logger.info('hubot-redis-brain: !counter 9')
     robot.logger.debug('hubot-redis-brain: Successfully connected to Redis')
     if (!info.auth) { getData() }
   })
@@ -112,7 +93,6 @@ module.exports = function (robot) {
     if (!data) {
       data = {}
     }
-    robot.logger.info('hubot-redis-brain: !counter 10')
     client.set(`${prefix}:storage`, JSON.stringify(data))
   })
 
